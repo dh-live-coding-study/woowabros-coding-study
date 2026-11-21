@@ -1,0 +1,31 @@
+name: Update study index
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_run:
+    workflows: [Collect submission]
+    types: [completed]
+permissions: {}
+concurrency:
+  group: study-index
+  cancel-in-progress: false
+jobs:
+  index:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: node scripts/update-index.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

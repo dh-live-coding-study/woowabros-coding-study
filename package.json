@@ -1,0 +1,11 @@
+{
+  "name": "woowabros-coding-study",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.16.0" },
+  "scripts": {
+    "test": "node --test",
+    "check:public": "node scripts/check-public-content.mjs"
+  }
+}
