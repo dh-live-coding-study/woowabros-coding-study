@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "programmers",
+  "problemId": "181943",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "2f863744-feb3-41f7-a093-d82c8464ad27",
+  "attempt": 2,
+  "outcome": "pass",
+  "verdict": "정답",
+  "capturedAt": 1795278239794,
+  "sourceSha256": "db803b04450af37d6e5fcc1ae4df3567b2e0898091ec479390725e75da8df7ac",
+  "path": "hyoyoon/0002-pass/solution.js",
+  "url": "https://school.programmers.co.kr/learn/courses/30/lessons/181943"
+}
