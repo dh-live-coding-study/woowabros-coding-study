@@ -1,7 +1,7 @@
 (() => {
   const channel = 'woowabros-submission-v1';
   let settings = {}, busy = false;
-  const seen = new Set();
+  const seen = new Set(), retryAfter = new Map();
   const send = message => new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(message, result => {
       if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message));
@@ -9,7 +9,10 @@
       else resolve(result);
     });
   });
-  const report = error => console.warn('[study collector]', error.message);
+  const report = error => {
+    console.warn('[study collector]', error.message);
+    send({ type: 'error', message: error.message }).catch(() => {});
+  };
   async function configure() {
     settings = await send({ type: 'settings' });
     window.postMessage({ channel, type: 'configure', enabled: settings.enabled }, location.origin);
@@ -56,7 +59,7 @@
         const cells = row.querySelectorAll('td');
         if (cells[userIndex]?.textContent.trim() !== account) continue;
         const id = row.id.match(/^solution-([1-9][0-9]*)$/)?.[1];
-        if (!id || seen.has(id)) continue;
+        if (!id || seen.has(id) || (retryAfter.get(id) || 0) > Date.now()) continue;
         const result = row.querySelector('[data-color]');
         const category = result?.getAttribute('data-color')?.replace(/-eng$/, '');
         // 대기, 채점 중, 알 수 없는 판정은 완료로 처리하지 않는다.
@@ -64,15 +67,19 @@
         const link = row.querySelector('a.problem_title');
         const problemId = link?.getAttribute('href')?.match(/^\/problem\/([1-9][0-9]*)$/)?.[1];
         if (!problemId) continue;
-        const response = await fetch(`/source/download/${id}`, { credentials: 'same-origin', redirect: 'error' });
-        if (!response.ok || /text\/html/i.test(response.headers.get('content-type') || '')) throw new Error(`백준 ${id}번 소스를 읽지 못했습니다.`);
-        const code = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }).decode(await response.arrayBuffer());
-        if (!code.trim()) throw new Error('소스 대신 로그인 화면을 받았습니다.');
-        const submission = { platform: 'baekjoon', problemId, captureId: `boj-${id}`, account,
-          title: link.getAttribute('title') || link.getAttribute('data-original-title') || link.textContent.trim() || problemId,
-          extension: extension(cells[languageIndex]?.textContent || ''), code, outcome: category === 'ac' ? 'pass' : 'fail',
-          verdict: result.textContent.trim(), capturedAt: Date.now(), difficulty: '' };
-        await send({ type: 'capture', submission }); seen.add(id);
+        try {
+          const response = await fetch(`/source/download/${id}`, { credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(15000) });
+          if (!response.ok || /text\/html/i.test(response.headers.get('content-type') || '')) throw new Error(`백준 ${id}번 소스를 읽지 못했습니다.`);
+          const code = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }).decode(await response.arrayBuffer());
+          if (!code.trim()) throw new Error('소스 대신 로그인 화면을 받았습니다.');
+          const submission = { platform: 'baekjoon', problemId, captureId: `boj-${id}`, account,
+            title: link.getAttribute('title') || link.getAttribute('data-original-title') || link.textContent.trim() || problemId,
+            extension: extension(cells[languageIndex]?.textContent || ''), code, outcome: category === 'ac' ? 'pass' : 'fail',
+            verdict: result.textContent.trim(), capturedAt: Date.now(), difficulty: '' };
+          await send({ type: 'capture', submission }); seen.add(id);
+        } catch (error) {
+          retryAfter.set(id, Date.now() + 30000); report(error);
+        }
       }
     } finally { busy = false; }
   }
