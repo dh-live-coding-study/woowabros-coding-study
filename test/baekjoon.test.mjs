@@ -22,10 +22,10 @@ async function browser(rows, response) {
 
 test('BOJ collects own completed passes and failures, preserves BOM and ignores judging rows', async () => {
   const code = '\ufeffclass Main {\r\n  // 공백  \r\n}\r\n';
-  const b = await browser([row('5', 'judging'), row('4', 'ce'), row('3', 'ac-eng'), row('2', 'wa'), row('1', 'ac', 'other')], () => new Response(Buffer.from(code), { headers: { 'content-type': 'application/octet-stream' } }));
+  const b = await browser([row('6', 'awa'), row('5', 'judging'), row('4', 'ce'), row('3', 'ac-eng'), row('2', 'wa'), row('1', 'ac', 'other')], () => new Response(Buffer.from(code), { headers: { 'content-type': 'application/octet-stream' } }));
   await b.scan(); await b.scan();
-  assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2', 'boj-3', 'boj-4']);
-  assert.deepEqual(b.collected.map(item => item.outcome), ['fail', 'pass', 'fail']);
+  assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2', 'boj-3', 'boj-4', 'boj-6']);
+  assert.deepEqual(b.collected.map(item => item.outcome), ['fail', 'pass', 'fail', 'fail']);
   assert.equal(b.collected[0].code, code); assert.equal(b.collected[0].title, 'A+B');
 });
 

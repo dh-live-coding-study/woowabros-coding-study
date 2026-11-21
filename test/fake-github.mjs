@@ -18,6 +18,7 @@ export function fakeGithub() {
         (!query.get('base') || pr.base.ref === query.get('base')) && (!query.get('head') || `team:${pr.head.ref}` === query.get('head')));
     },
     async request(path, { method = 'GET', body, optional = false } = {}) {
+      if (path === '/git/matching-refs/heads/') return [...refs].map(([name, sha]) => ({ ref: `refs/heads/${name}`, object: { sha } }));
       if (path.startsWith('/git/ref/heads/')) {
         const name = path.slice('/git/ref/heads/'.length), sha = refs.get(name);
         if (!sha && !optional) throw new Error('missing ref');

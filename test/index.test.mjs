@@ -26,3 +26,14 @@ test('merged pass/fail counts link each participant folder on the problem branch
   assert.match(table, /pass 1, fail 1/); assert.match(table, /tree\/baekjoon%2F1000\/learner/);
   assert.doesNotMatch(table, /pull\/1/);
 });
+
+test('branch listing is fetched once even when the repository has over 100 refs', async () => {
+  const { github, run } = fixture(); await run(input('boj-1'));
+  const main = github.refs.get('main');
+  for (let i = 1; i <= 120; i++) github.refs.set(`study/task-${i}`, main);
+  let requests = 0;
+  const original = github.request;
+  github.request = async (path, options) => { if (path === '/git/matching-refs/heads/') requests++; return original(path, options); };
+  assert.match(await buildIndex(github, 'team/study', config), /A\+B/);
+  assert.equal(requests, 1);
+});

@@ -60,7 +60,7 @@
         const result = row.querySelector('[data-color]');
         const category = result?.getAttribute('data-color')?.replace(/-eng$/, '');
         // 대기, 채점 중, 알 수 없는 판정은 완료로 처리하지 않는다.
-        if (!['ac', 'wa', 'rte', 'ce', 'pe', 'tle', 'mle', 'ole', 'pac'].includes(category)) continue;
+        if (!['ac', 'wa', 'rte', 'ce', 'pe', 'tle', 'mle', 'ole', 'pac', 'awa'].includes(category)) continue;
         const link = row.querySelector('a.problem_title');
         const problemId = link?.getAttribute('href')?.match(/^\/problem\/([1-9][0-9]*)$/)?.[1];
         if (!problemId) continue;
