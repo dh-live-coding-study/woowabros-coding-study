@@ -1,0 +1,34 @@
+name: Collect submission
+run-name: Collect submission by ${{ github.actor }}
+on:
+  workflow_dispatch:
+    inputs:
+      member:
+        description: study.config.json의 참여자 ID
+        required: true
+        type: string
+      submission:
+        description: 확장 프로그램이 수집한 제출 정보
+        required: true
+        type: string
+permissions: {}
+jobs:
+  import:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: node scripts/import-submission.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
