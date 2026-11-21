@@ -69,7 +69,10 @@
         if (!problemId) continue;
         try {
           const response = await fetch(`/source/download/${id}`, { credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(15000) });
-          if (!response.ok || /text\/html/i.test(response.headers.get('content-type') || '')) throw new Error(`백준 ${id}번 소스를 읽지 못했습니다.`);
+          if (!response.ok) throw new Error(`백준 ${id}번 소스 요청 실패: HTTP ${response.status}`);
+          const html = /text\/html/i.test(response.headers.get('content-type') || '');
+          const attachment = /^attachment(?:\s*;|\s*$)/i.test(response.headers.get('content-disposition') || '');
+          if (html && !attachment) throw new Error(`백준 ${id}번 소스 대신 HTML 화면을 받았습니다.`);
           const code = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }).decode(await response.arrayBuffer());
           if (!code.trim()) throw new Error('소스 대신 로그인 화면을 받았습니다.');
           const submission = { platform: 'baekjoon', problemId, captureId: `boj-${id}`, account,

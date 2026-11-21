@@ -44,3 +44,11 @@ test('an inaccessible older submission does not block later submissions on the s
   assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2']);
   assert.deepEqual(requested, ['/source/download/1', '/source/download/2']);
 });
+
+test('source attachments remain source files even when the server labels their MIME type as HTML', async () => {
+  const code = '\ufeffimport java.io.*;\r\npublic class Main {}\r\n';
+  const b = await browser([row('1', 'ac')], () => new Response(Buffer.from(code), { headers: {
+    'content-type': 'text/html; charset=UTF-8', 'content-disposition': 'attachment; filename="1.java"',
+  } }));
+  await b.scan(); assert.equal(b.collected.length, 1); assert.equal(b.collected[0].code, code);
+});
