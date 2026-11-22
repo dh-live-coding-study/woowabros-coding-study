@@ -6,6 +6,14 @@ if (saved) for (const [name, value] of Object.entries(saved)) {
   const input = form.elements.namedItem(name);
   if (input) input.type === 'checkbox' ? input.checked = value : input.value = value;
 }
+const repository = form.elements.namedItem('repository');
+function updateConfigLink() {
+  const link = document.querySelector('#config');
+  if (/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repository.value)) link.href = `https://github.com/${repository.value}/blob/main/study.config.json`;
+  else link.removeAttribute('href');
+}
+repository.addEventListener('input', updateConfigLink);
+updateConfigLink();
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const settings = Object.fromEntries(new FormData(form)); settings.enabled = form.elements.enabled.checked;

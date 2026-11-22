@@ -41,14 +41,14 @@ hyoyoon/
 ## 참여 설정
 
 1. 관리자에게 GitHub 계정과 백준 아이디, 프로그래머스 계정 표시를 알려 [study.config.json](./study.config.json)에 등록합니다. 프로그래머스 계정 표시는 로그인 계정을 구분할 수 있는 본인의 닉네임 등을 사용합니다.
-2. [저장소 ZIP](https://github.com/dh-live-coding-study/woowabros-coding-study/archive/refs/heads/main.zip)을 내려받고 압축을 풉니다.
+2. [저장소 ZIP](https://github.com/quantum-jumpers/woowabros-coding-study/archive/refs/heads/main.zip)을 내려받고 압축을 풉니다.
 3. Chrome의 `chrome://extensions`에서 **개발자 모드**를 켜고, **압축해제된 확장 프로그램을 로드합니다**로 압축을 푼 폴더 안의 `extension`을 선택합니다.
-4. [GitHub fine-grained token](https://github.com/settings/personal-access-tokens/new)을 만듭니다. Resource owner는 `dh-live-coding-study`, Repository access는 이 저장소만 선택합니다. 권한은 **Actions: Read and write**, **Contents: Read-only**, **Pull requests: Read-only**로 설정합니다. 조직 승인이 필요하면 관리자에게 요청합니다.
+4. [GitHub fine-grained token](https://github.com/settings/personal-access-tokens/new)을 만듭니다. Resource owner는 `quantum-jumpers`, Repository access는 이 저장소만 선택합니다. 권한은 **Actions: Read and write**, **Contents: Read-only**, **Pull requests: Read-only**로 설정합니다. 조직 승인이 필요하면 관리자에게 요청합니다.
 5. 확장 프로그램의 설정 화면에 아래 값을 입력하고 **제출 수집 켜기**를 선택해 저장합니다.
 
 | 항목 | 입력값 |
 | --- | --- |
-| GitHub 저장소 | `dh-live-coding-study/woowabros-coding-study` |
+| GitHub 저장소 | `quantum-jumpers/woowabros-coding-study` |
 | 참여자 ID | 설정 파일의 본인 `id` |
 | 백준 아이디 | 로그인한 백준 아이디 |
 | 프로그래머스 계정 표시 | 설정 파일의 본인 `programmers` 값 |
