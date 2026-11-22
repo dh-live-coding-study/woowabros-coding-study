@@ -16,8 +16,8 @@ function page(code = defaultCode) {
 // 테스트에서는 DOMParser의 textarea RCDATA 처리만 재현한다. 실제 파서는 Chrome에서 확인한다.
 class DOMParser {
   parseFromString(html) {
-    const raw = html.match(/^<textarea>([\s\S]*)<\/textarea>$/)[1].replace(/\r\n?/g, '\n').replace(/^\n/, '');
-    const textContent = raw.replace(/&(?:#(\d+)|amp|lt|gt);/g, (entity, number) => number ? String.fromCodePoint(Number(number)) : ({ '&amp;': '&', '&lt;': '<', '&gt;': '>' })[entity]);
+    const raw = html.match(/^<textarea>([\s\S]*)<\/textarea>$/)[1].replace(/\r\n?/g, '\n');
+    const textContent = raw.replace(/&(?:#(\d+)|amp|lt|gt);/g, (entity, number) => number ? String.fromCodePoint(Number(number)) : ({ '&amp;': '&', '&lt;': '<', '&gt;': '>' })[entity]).replace(/^\n/, '');
     return { querySelector: () => ({ textContent }) };
   }
 }
@@ -48,6 +48,12 @@ test('BOJ login HTML and the empty HTTP 200 response are not saved as source', a
     const b = await browser([row('1', 'ac')], () => new Response(html, { headers: { 'content-type': 'text/html' } }));
     await b.scan(); assert.equal(b.collected.length, 0); assert.match(b.errors[0], /원문을 찾지 못했습니다/);
   }
+});
+
+test('a first LF stays in the source even though HTML textarea parsing would discard it', async () => {
+  const code = '\nclass Main {}\n';
+  const b = await browser([row('1', 'ac', 'rudevico', Buffer.byteLength(code))], () => page(code));
+  await b.scan(); assert.equal(b.collected[0]?.code, code);
 });
 
 test('an inaccessible older submission does not block later submissions on the same status page', async () => {

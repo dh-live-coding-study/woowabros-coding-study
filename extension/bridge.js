@@ -47,7 +47,7 @@
     if (source === undefined) throw new Error('백준 소스 조회 화면에서 원문을 찾지 못했습니다. 로그인 상태를 확인하세요.');
     // HTML 파싱 과정에서 원문의 CRLF와 첫 줄바꿈이 바뀌지 않도록 문자 참조로 보호한다.
     const encoded = source.replace(/\r/g, '&#13;').replace(/\n/g, '&#10;');
-    return new DOMParser().parseFromString(`<textarea>${encoded}</textarea>`, 'text/html').querySelector('textarea').textContent;
+    return new DOMParser().parseFromString(`<textarea>_${encoded}</textarea>`, 'text/html').querySelector('textarea').textContent.slice(1);
   }
   async function scanBaekjoon() {
     if (busy || !settings.enabled || !['acmicpc.net', 'www.acmicpc.net'].includes(location.hostname) || location.pathname !== '/status') return;
