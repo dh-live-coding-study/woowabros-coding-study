@@ -26,7 +26,7 @@
     const problemId = location.pathname.match(/^\/learn\/courses\/30\/lessons\/([1-9][0-9]*)\/?$/)?.[1];
     const spec = parse(identifier);
     // 연습문제의 submit만 수집한다. run, 저장, 채용 시험 채널은 대상이 아니다.
-    if (!enabled || !problemId || !spec || !['Challenge::AlgorithmChannel', 'Challenge::SqlChannel'].includes(spec.channel) || String(spec.lesson_id) !== problemId || spec.test_id || spec.skill_check_id || data?.action !== 'submit') return null;
+    if (!enabled || !problemId || !spec || !['Challenge::AlgorithmChannel', 'Challenge::SqlChannel', 'Challenge::DatabaseChannel'].includes(spec.channel) || String(spec.lesson_id) !== problemId || spec.test_id || spec.skill_check_id || data?.action !== 'submit') return null;
     const codes = Object.values(data.codes || {});
     // 일반 알고리즘 문제의 단일 소스만 보관한다. 빈칸 배열을 완성 코드로 오인하지 않는다.
     if (codes.length !== 1 || typeof codes[0] !== 'string') return null;
