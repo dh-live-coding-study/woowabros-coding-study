@@ -12,7 +12,7 @@ function fixture() {
   return { github, run };
 }
 
-test('index publishes stored counts and a conversation column without requesting PRs', async () => {
+test('index publishes participant links and a conversation column without requesting PRs', async () => {
   const { github, run } = fixture(); await run(input('boj-1'));
   const before = await github.readText('README.md', 'main');
   const previous = github.refs.get('main');
@@ -21,7 +21,9 @@ test('index publishes stored counts and a conversation column without requesting
   assert.equal(github.refs.get('main'), first.sha);
   assert.deepEqual(github.objects.get(first.sha).parents, [previous]);
   assert.doesNotMatch(content, /대기 중인 PR|pull\//);
-  assert.match(content, /pass 0, fail 1/);
+  assert.match(content, /\[learner\]\(https:\/\/github.com\/team\/study\/tree\/baekjoon%2F1000\/learner\)/);
+  assert.match(content, /\[백준<br>1000<br>A\+B\]\(https:\/\/www.acmicpc.net\/problem\/1000\)/);
+  assert.doesNotMatch(content, /(?:pass|fail) \d/);
   assert.match(content, /토론방/);
   for (const row of content.split('\n').filter(line => line.startsWith('|'))) assert.equal(row.split('|').length, 7);
   assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
@@ -32,14 +34,16 @@ test('index publishes stored counts and a conversation column without requesting
   assert.equal(github.refs.get('main'), first.sha);
 });
 
-test('publishing immediately after collection includes new pass/fail counts on main', async () => {
+test('new attempts by the same participant keep one name without changing the README', async () => {
   const { github, run } = fixture();
   await run(input('boj-1'));
   await publishIndex({ github, repository: 'team/study', config });
   await run({ ...input('boj-2'), outcome: 'pass' });
-  await publishIndex({ github, repository: 'team/study', config });
+  assert.equal((await publishIndex({ github, repository: 'team/study', config })).sha, null);
   const table = await github.readText('README.md', 'main');
-  assert.match(table, /pass 1, fail 1/); assert.match(table, /tree\/baekjoon%2F1000\/learner/);
+  assert.equal((table.match(/\[learner\]/g) || []).length, 1);
+  assert.doesNotMatch(table, /(?:pass|fail) \d/);
+  assert.match(table, /tree\/baekjoon%2F1000\/learner/);
   assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
 });
 
@@ -67,9 +71,9 @@ test('SQL submissions and programming submissions appear in separate sections wi
   } };
   const index = await buildIndex(github, 'team/study', groupedConfig);
   const sqlRows = sectionRows(index, 'SQL'), programmingRows = sectionRows(index, '프로그래밍');
-  assert.match(sqlRows, /SQL example.*GROUP BY, RANK/); assert.match(sqlRows, /pass 1, fail 0/);
+  assert.match(sqlRows, /SQL example.*GROUP BY, RANK/); assert.match(sqlRows, /프로그래머스<br>1001<br>SQL example.*\[learner\]/);
   assert.doesNotMatch(sqlRows, /A\+B/);
-  assert.match(programmingRows, /A\+B.*Graph, BFS/); assert.match(programmingRows, /pass 0, fail 1/);
+  assert.match(programmingRows, /A\+B.*Graph, BFS/); assert.match(programmingRows, /\[learner\]/);
   assert.doesNotMatch(programmingRows, /SQL example|Graph, BFS, Graph/);
 });
 
@@ -123,7 +127,7 @@ test('a concurrent main edit is preserved when the index commit is retried', asy
   assert.deepEqual(github.objects.get(result.sha).parents, [concurrent.sha]);
   const readme = await github.readText('README.md', 'main');
   assert.match(readme, /Updated by a maintainer/);
-  assert.match(sectionRows(readme, 'SQL'), /SQL example.*pass 1, fail 0/);
+  assert.match(sectionRows(readme, 'SQL'), /SQL example.*\[learner\]/);
   assert.equal(await github.readText('docs/new-guide.md', 'main'), 'Keep this new guide.');
 });
 
@@ -173,10 +177,10 @@ test('missing or ambiguous README markers prevent any main update', async () => 
   }
 });
 
-test('the first SQL submission is immediately counted in the SQL section', async () => {
+test('the first SQL submission immediately links its participant in the SQL section', async () => {
   const { github, run } = fixture(); await run(sqlInput('sql-first'));
   const index = await buildIndex(github, 'team/study', config);
-  assert.match(sectionRows(index, 'SQL'), /SQL example.*pass 1, fail 0/);
+  assert.match(sectionRows(index, 'SQL'), /SQL example.*\[learner\]/);
   assert.doesNotMatch(sectionRows(index, '프로그래밍'), /SQL example/);
 });
 
@@ -195,14 +199,14 @@ test('solved.ac difficulty refreshes existing Baekjoon rows without changing Pro
   assert.deepEqual(requested, ['1000']);
 });
 
-test('a difficulty lookup failure keeps the previous grade while a new submission updates its counts', async () => {
+test('a difficulty lookup failure keeps the previous grade and participant link after a new attempt', async () => {
   const { github, run } = fixture();
   await run(input('boj-grade-1'));
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ difficulty: 'Bronze V', categories: ['Mathematics'] }) });
   await run({ ...input('boj-grade-2'), outcome: 'pass', verdict: '정답' });
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => null });
   const readme = await github.readText('README.md', 'main');
-  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Mathematics.*Bronze V.*pass 1, fail 1/);
+  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Mathematics.*Bronze V.*\[learner\]/);
 });
 
 test('official categories fill both sections and explicit problem settings take priority', async () => {
@@ -221,12 +225,12 @@ test('official categories fill both sections and explicit problem settings take 
   assert.match(sectionRows(manual, '프로그래밍'), /A\+B.*미분류.*Bronze V/);
 });
 
-test('provider failures keep SQL categories and counts without borrowing a row outside the index', async () => {
+test('provider failures keep SQL categories and participant links without borrowing a row outside the index', async () => {
   const { github, run } = fixture();
   await run(sqlInput('sql-preserve'));
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ categories: ['GROUP BY'] }) });
   const previousReadme = '| [outside](https://school.programmers.co.kr/learn/courses/30/lessons/1001) | Wrong | 9 |\n' + await github.readText('README.md', 'main');
   const index = await buildIndex(github, 'team/study', config, { infoFor: async () => null, previousReadme });
-  assert.match(sectionRows(index, 'SQL'), /SQL example.*GROUP BY.*pass 1, fail 0/);
+  assert.match(sectionRows(index, 'SQL'), /SQL example.*GROUP BY.*\[learner\]/);
   assert.doesNotMatch(index, /Wrong/);
 });
