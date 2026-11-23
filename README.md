@@ -13,6 +13,8 @@
 
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 대기 중인 PR |
 | --- | --- | --- | --- | --- |
+| [백준 1000. A+B](https://www.acmicpc.net/problem/1000) | 미분류 | — | — | [#7](https://github.com/quantum-jumpers/woowabros-coding-study/pull/7) |
+| [프로그래머스 181943. 문자열 겹쳐쓰기](https://school.programmers.co.kr/learn/courses/30/lessons/181943) | 미분류 | 0 | — | [#4](https://github.com/quantum-jumpers/woowabros-coding-study/pull/4) |
 
 <!-- STUDY:END -->
 
