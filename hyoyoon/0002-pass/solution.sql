@@ -1,0 +1,26 @@
+SELECT      ID
+FROM        ECOLI_DATA
+WHERE       PARENT_ID IN
+(
+    SELECT  ID
+    FROM    ECOLI_DATA
+    WHERE   PARENT_ID IS NOT NULL
+)
+
+EXCEPT
+
+SELECT      ID
+FROM        ECOLI_DATA
+WHERE       PARENT_ID IN
+(
+    SELECT  ID
+    FROM    ECOLI_DATA
+    WHERE   PARENT_ID IN
+    (
+        SELECT  ID
+        FROM    ECOLI_DATA
+        WHERE   PARENT_ID IS NOT NULL
+    )
+)
+
+ORDER BY    ID ASC;
