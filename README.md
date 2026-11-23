@@ -15,6 +15,7 @@
 | [프로그래머스 131537. 오프라인/온라인 판매 데이터 통합하기](https://school.programmers.co.kr/learn/courses/30/lessons/131537) | 미분류 | 4 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131537/hyoyoon) (pass 1, fail 0) | — |
 | [프로그래머스 164673. 조건에 부합하는 중고거래 댓글 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/164673) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F164673/hyoyoon) (pass 1, fail 0) | — |
 | [프로그래머스 273711. 업그레이드 된 아이템 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/273711) | 미분류 | 2 | — | [#17](https://github.com/quantum-jumpers/woowabros-coding-study/pull/17) |
+| [프로그래머스 276013. Python 개발자 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/276013) | 미분류 | 1 | — | [#18](https://github.com/quantum-jumpers/woowabros-coding-study/pull/18) |
 
 ## 프로그래밍
 
