@@ -8,21 +8,21 @@
 
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 대기 중인 PR |
 | --- | --- | --- | --- | --- |
-| [프로그래머스 59034. 모든 레코드 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/59034) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F59034/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 59405. 상위 n개 레코드](https://school.programmers.co.kr/learn/courses/30/lessons/59405) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F59405/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 131535. 조건에 맞는 회원수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131535) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131535/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 131536. 재구매가 일어난 상품과 회원 리스트 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131536) | 미분류 | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131536/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 131537. 오프라인/온라인 판매 데이터 통합하기](https://school.programmers.co.kr/learn/courses/30/lessons/131537) | 미분류 | 4 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131537/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 164673. 조건에 부합하는 중고거래 댓글 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/164673) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F164673/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 273711. 업그레이드 된 아이템 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/273711) | 미분류 | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F273711/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 276013. Python 개발자 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/276013) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F276013/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 59034. 모든 레코드 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/59034) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F59034/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 59405. 상위 n개 레코드](https://school.programmers.co.kr/learn/courses/30/lessons/59405) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F59405/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 131535. 조건에 맞는 회원수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131535) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131535/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 131536. 재구매가 일어난 상품과 회원 리스트 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131536) | SELECT | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131536/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 131537. 오프라인/온라인 판매 데이터 통합하기](https://school.programmers.co.kr/learn/courses/30/lessons/131537) | SELECT | 4 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131537/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 164673. 조건에 부합하는 중고거래 댓글 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/164673) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F164673/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 273711. 업그레이드 된 아이템 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/273711) | SELECT | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F273711/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 276013. Python 개발자 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/276013) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F276013/hyoyoon) (pass 1, fail 0) | — |
 
 ## 프로그래밍
 
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 대기 중인 PR |
 | --- | --- | --- | --- | --- |
-| [백준 1000. A+B](https://www.acmicpc.net/problem/1000) | 미분류 | Bronze V | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F1000/hyoyoon) (pass 5, fail 7) | — |
-| [프로그래머스 181943. 문자열 겹쳐쓰기](https://school.programmers.co.kr/learn/courses/30/lessons/181943) | 미분류 | 0 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F181943/hyoyoon) (pass 2, fail 0) | — |
+| [백준 1000. A+B](https://www.acmicpc.net/problem/1000) | arithmetic, implementation, mathematics | Bronze V | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F1000/hyoyoon) (pass 5, fail 7) | — |
+| [프로그래머스 181943. 문자열 겹쳐쓰기](https://school.programmers.co.kr/learn/courses/30/lessons/181943) | String | 0 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F181943/hyoyoon) (pass 2, fail 0) | — |
 
 <!-- STUDY:END -->
 
