@@ -178,3 +178,25 @@ test('the first SQL submission is grouped as SQL before its PR is merged', async
   assert.match(sectionRows(index, 'SQL'), new RegExp(`SQL example.*pull/${pr.number}`));
   assert.doesNotMatch(sectionRows(index, '프로그래밍'), /SQL example/);
 });
+
+test('solved.ac difficulty refreshes existing Baekjoon rows without changing Programmers levels', async () => {
+  const { github, run } = fixture();
+  await run(input('boj-difficulty'));
+  await run({ ...sqlInput('sql-difficulty'), difficulty: '1' });
+  const requested = [];
+  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async id => { requested.push(id); return 'Bronze V'; } });
+  const readme = await github.readText('README.md', 'main');
+  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Bronze V/);
+  assert.match(sectionRows(readme, 'SQL'), /SQL example.*미분류 \| 1 \|/);
+  assert.deepEqual(requested, ['1000']);
+});
+
+test('a difficulty lookup failure keeps the previous grade while a new submission updates its counts', async () => {
+  const { github, run } = fixture();
+  const first = await run(input('boj-grade-1')); github.merge(first.number);
+  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async () => 'Bronze V' });
+  const second = await run({ ...input('boj-grade-2'), outcome: 'pass', verdict: '정답' }); github.merge(second.number);
+  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async () => null });
+  const readme = await github.readText('README.md', 'main');
+  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Bronze V.*pass 1, fail 1/);
+});
