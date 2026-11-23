@@ -12,7 +12,7 @@ function fixture() {
   return { github, run };
 }
 
-test('index updates main directly and links pending submissions without creating an index PR', async () => {
+test('index publishes four columns with stored counts and never requests PRs', async () => {
   const { github, run } = fixture(); await run(input('boj-1'));
   const before = await github.readText('README.md', 'main');
   const previous = github.refs.get('main');
@@ -20,26 +20,26 @@ test('index updates main directly and links pending submissions without creating
   const content = await github.readText('README.md', 'main');
   assert.equal(github.refs.get('main'), first.sha);
   assert.deepEqual(github.objects.get(first.sha).parents, [previous]);
-  assert.match(content, /대기 중인 PR/); assert.match(content, /pull\/1/);
+  assert.doesNotMatch(content, /대기 중인 PR|pull\//);
+  assert.match(content, /pass 0, fail 1/);
+  for (const row of content.split('\n').filter(line => line.startsWith('|'))) assert.equal(row.split('|').length, 6);
+  assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
   assert.equal(content.split('<!-- STUDY:START -->')[0], before.split('<!-- STUDY:START -->')[0]);
   assert.equal(content.split('<!-- STUDY:END -->')[1], before.split('<!-- STUDY:END -->')[1]);
-  assert.equal(github.pulls.length, 1);
-  assert.equal(github.refs.has('docs/study-index'), false);
   const again = await publishIndex({ github, repository: 'team/study', config });
   assert.equal(again.sha, null);
   assert.equal(github.refs.get('main'), first.sha);
 });
 
-test('publishing after a submission merge replaces its pending link with participant pass/fail counts on main', async () => {
+test('publishing immediately after collection includes new pass/fail counts on main', async () => {
   const { github, run } = fixture();
-  const first = await run(input('boj-1')); await run({ ...input('boj-2'), outcome: 'pass' });
+  await run(input('boj-1'));
   await publishIndex({ github, repository: 'team/study', config });
-  github.merge(first.number);
+  await run({ ...input('boj-2'), outcome: 'pass' });
   await publishIndex({ github, repository: 'team/study', config });
   const table = await github.readText('README.md', 'main');
   assert.match(table, /pass 1, fail 1/); assert.match(table, /tree\/baekjoon%2F1000\/learner/);
-  assert.doesNotMatch(table, /pull\/1/);
-  assert.equal(github.pulls.length, 1);
+  assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
 });
 
 test('branch listing is fetched once even when the repository has over 100 refs', async () => {
@@ -58,8 +58,8 @@ const sectionRows = (index, title) => index.split(`## ${title}\n\n`)[1].split('\
 
 test('SQL submissions and programming submissions appear in separate sections with multiple problem categories', async () => {
   const { github, run } = fixture();
-  const sql = await run(sqlInput('sql-1')); github.merge(sql.number);
-  const programming = await run(input('boj-1')); github.merge(programming.number);
+  await run(sqlInput('sql-1'));
+  await run(input('boj-1'));
   const groupedConfig = { ...config, problems: {
     'programmers/1001': { categories: ['GROUP BY', 'RANK'] },
     'baekjoon/1000': { categories: ['Graph', 'BFS', 'Graph'] },
@@ -73,7 +73,7 @@ test('SQL submissions and programming submissions appear in separate sections wi
 });
 
 test('uncategorized problems remain visible and main settings can override their section without moving source', async () => {
-  const { github, run } = fixture(); const pr = await run(input('boj-1')); github.merge(pr.number);
+  const { github, run } = fixture(); await run(input('boj-1'));
   const initial = await buildIndex(github, 'team/study', config);
   assert.match(sectionRows(initial, '프로그래밍'), /A\+B.*미분류/);
   const index = await buildIndex(github, 'team/study', { ...config, problems: { 'baekjoon/1000': { type: 'sql', categories: ['OUTER JOIN'] } } });
@@ -82,8 +82,8 @@ test('uncategorized problems remain visible and main settings can override their
   assert.equal(await github.readText('learner/0001-fail/Main.java', 'baekjoon/1000'), input('x').code);
 });
 
-test('legacy problems without a type use their merged SQL files to select the SQL section', async () => {
-  const { github, run } = fixture(); const pr = await run(sqlInput('sql-1')); github.merge(pr.number);
+test('legacy problems without a type use their stored SQL files to select the SQL section', async () => {
+  const { github, run } = fixture(); await run(sqlInput('sql-1'));
   const parent = github.refs.get('programmers/1001');
   const problem = JSON.parse(await github.readText('.study/problem.json', parent)); delete problem.type;
   const legacy = await createCommit(github, { parent, files: [{ path: '.study/problem.json', content: JSON.stringify(problem) }], message: 'legacy fixture' });
@@ -103,7 +103,7 @@ test('invalid category settings fail without publishing an incorrect README', as
 });
 
 test('a concurrent main edit is preserved when the index commit is retried', async () => {
-  const { github, run } = fixture(); const pr = await run(sqlInput('sql-1')); github.merge(pr.number);
+  const { github, run } = fixture(); await run(sqlInput('sql-1'));
   const original = github.request;
   let concurrent;
   github.request = async (path, options) => {
@@ -137,7 +137,7 @@ test('a refused main update is reported without changing main or opening an inde
   await assert.rejects(publishIndex({ github, repository: 'team/study', config }), /main update denied/);
   assert.equal(attempts, 1);
   assert.equal(github.refs.get('main'), before);
-  assert.equal(github.pulls.length, 0);
+  assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
 });
 
 test('repeated main changes stop retries without overwriting another commit', async () => {
@@ -172,10 +172,10 @@ test('missing or ambiguous README markers prevent any main update', async () => 
   }
 });
 
-test('the first SQL submission is grouped as SQL before its PR is merged', async () => {
-  const { github, run } = fixture(); const pr = await run(sqlInput('sql-first'));
+test('the first SQL submission is immediately counted in the SQL section', async () => {
+  const { github, run } = fixture(); await run(sqlInput('sql-first'));
   const index = await buildIndex(github, 'team/study', config);
-  assert.match(sectionRows(index, 'SQL'), new RegExp(`SQL example.*pull/${pr.number}`));
+  assert.match(sectionRows(index, 'SQL'), /SQL example.*pass 1, fail 0/);
   assert.doesNotMatch(sectionRows(index, '프로그래밍'), /SQL example/);
 });
 
@@ -196,9 +196,9 @@ test('solved.ac difficulty refreshes existing Baekjoon rows without changing Pro
 
 test('a difficulty lookup failure keeps the previous grade while a new submission updates its counts', async () => {
   const { github, run } = fixture();
-  const first = await run(input('boj-grade-1')); github.merge(first.number);
+  await run(input('boj-grade-1'));
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ difficulty: 'Bronze V', categories: ['Mathematics'] }) });
-  const second = await run({ ...input('boj-grade-2'), outcome: 'pass', verdict: '정답' }); github.merge(second.number);
+  await run({ ...input('boj-grade-2'), outcome: 'pass', verdict: '정답' });
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => null });
   const readme = await github.readText('README.md', 'main');
   assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Mathematics.*Bronze V.*pass 1, fail 1/);
@@ -222,7 +222,7 @@ test('official categories fill both sections and explicit problem settings take 
 
 test('provider failures keep SQL categories and counts without borrowing a row outside the index', async () => {
   const { github, run } = fixture();
-  const submission = await run(sqlInput('sql-preserve')); github.merge(submission.number);
+  await run(sqlInput('sql-preserve'));
   await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ categories: ['GROUP BY'] }) });
   const previousReadme = '| [outside](https://school.programmers.co.kr/learn/courses/30/lessons/1001) | Wrong | 9 |\n' + await github.readText('README.md', 'main');
   const index = await buildIndex(github, 'team/study', config, { infoFor: async () => null, previousReadme });
