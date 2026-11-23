@@ -23,6 +23,7 @@
 | [프로그래머스<br>299305<br>대장균들의 자식의 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/299305) | OUTER JOIN, GROUP BY | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299305/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/37) |
 | [프로그래머스<br>299307<br>대장균의 크기에 따라 분류하기 1](https://school.programmers.co.kr/learn/courses/30/lessons/299307) | CASE | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299307/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/38) |
 | [프로그래머스<br>301649<br>대장균의 크기에 따라 분류하기 2](https://school.programmers.co.kr/learn/courses/30/lessons/301649) | RANK | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F301649/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/39) |
+| [프로그래머스<br>301650<br>특정 세대의 대장균 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/301650) | SELECT | 4 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F301650/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/43) |
 
 ## 프로그래밍
 
