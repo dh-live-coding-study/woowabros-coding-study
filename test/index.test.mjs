@@ -184,7 +184,10 @@ test('solved.ac difficulty refreshes existing Baekjoon rows without changing Pro
   await run(input('boj-difficulty'));
   await run({ ...sqlInput('sql-difficulty'), difficulty: '1' });
   const requested = [];
-  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async id => { requested.push(id); return 'Bronze V'; } });
+  await publishIndex({ github, repository: 'team/study', config, infoFor: async item => {
+    if (item.platform !== 'baekjoon') return null;
+    requested.push(item.problemId); return { difficulty: 'Bronze V', categories: ['Mathematics'] };
+  } });
   const readme = await github.readText('README.md', 'main');
   assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Bronze V/);
   assert.match(sectionRows(readme, 'SQL'), /SQL example.*미분류 \| 1 \|/);
@@ -194,9 +197,35 @@ test('solved.ac difficulty refreshes existing Baekjoon rows without changing Pro
 test('a difficulty lookup failure keeps the previous grade while a new submission updates its counts', async () => {
   const { github, run } = fixture();
   const first = await run(input('boj-grade-1')); github.merge(first.number);
-  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async () => 'Bronze V' });
+  await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ difficulty: 'Bronze V', categories: ['Mathematics'] }) });
   const second = await run({ ...input('boj-grade-2'), outcome: 'pass', verdict: '정답' }); github.merge(second.number);
-  await publishIndex({ github, repository: 'team/study', config, difficultyFor: async () => null });
+  await publishIndex({ github, repository: 'team/study', config, infoFor: async () => null });
   const readme = await github.readText('README.md', 'main');
-  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Bronze V.*pass 1, fail 1/);
+  assert.match(sectionRows(readme, '프로그래밍'), /A\+B.*Mathematics.*Bronze V.*pass 1, fail 1/);
+});
+
+test('official categories fill both sections and explicit problem settings take priority', async () => {
+  const { github, run } = fixture();
+  await run(input('boj-categories')); await run(sqlInput('sql-categories'));
+  const infoFor = async item => item.platform === 'baekjoon'
+    ? { difficulty: 'Bronze V', categories: ['Mathematics', 'Implementation'] } : { categories: ['SELECT'] };
+  const index = await buildIndex(github, 'team/study', config, { infoFor });
+  assert.match(sectionRows(index, 'SQL'), /SQL example.*SELECT/);
+  assert.match(sectionRows(index, '프로그래밍'), /A\+B.*Mathematics, Implementation.*Bronze V/);
+  const manualConfig = { ...config, problems: {
+    'programmers/1001': { categories: ['GROUP BY', 'RANK'] }, 'baekjoon/1000': { categories: [] },
+  } };
+  const manual = await buildIndex(github, 'team/study', manualConfig, { infoFor });
+  assert.match(sectionRows(manual, 'SQL'), /SQL example.*GROUP BY, RANK/);
+  assert.match(sectionRows(manual, '프로그래밍'), /A\+B.*미분류.*Bronze V/);
+});
+
+test('provider failures keep SQL categories and counts without borrowing a row outside the index', async () => {
+  const { github, run } = fixture();
+  const submission = await run(sqlInput('sql-preserve')); github.merge(submission.number);
+  await publishIndex({ github, repository: 'team/study', config, infoFor: async () => ({ categories: ['GROUP BY'] }) });
+  const previousReadme = '| [outside](https://school.programmers.co.kr/learn/courses/30/lessons/1001) | Wrong | 9 |\n' + await github.readText('README.md', 'main');
+  const index = await buildIndex(github, 'team/study', config, { infoFor: async () => null, previousReadme });
+  assert.match(sectionRows(index, 'SQL'), /SQL example.*GROUP BY.*pass 1, fail 0/);
+  assert.doesNotMatch(index, /Wrong/);
 });

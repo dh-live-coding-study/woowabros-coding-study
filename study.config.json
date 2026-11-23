@@ -7,5 +7,7 @@
       "programmers": "rudevico"
     }
   ],
-  "problems": {}
+  "problems": {
+    "programmers/181943": { "categories": ["String"] }
+  }
 }
