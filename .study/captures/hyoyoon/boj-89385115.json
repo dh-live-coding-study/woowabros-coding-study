@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "baekjoon",
+  "problemId": "1000",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "boj-89385115",
+  "attempt": 10,
+  "outcome": "fail",
+  "verdict": "출력 형식이 잘못되었습니다",
+  "capturedAt": 1795394247093,
+  "sourceSha256": "168d63e6fa4ed8ccb05ec63e3b6630d8d3efe5ac6a5966ed8092d3351d2f9e6d",
+  "path": "hyoyoon/0010-fail/Main.java",
+  "url": "https://www.acmicpc.net/problem/1000"
+}
