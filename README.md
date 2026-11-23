@@ -33,6 +33,7 @@
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 토론방 |
 | --- | --- | --- | --- | --- |
 | [백준<br>1000<br>A+B](https://www.acmicpc.net/problem/1000) | arithmetic, implementation, mathematics | Bronze V | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F1000/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/25) |
+| [백준<br>7576<br>토마토](https://www.acmicpc.net/problem/7576) | breadth-first search, graphs, graph traversal, grid graphs, shortest paths | Gold V | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F7576/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/47) |
 | [프로그래머스<br>181943<br>문자열 겹쳐쓰기](https://school.programmers.co.kr/learn/courses/30/lessons/181943) | String | 0 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F181943/hyoyoon) | [토론](https://github.com/quantum-jumpers/woowabros-coding-study/issues/32) |
 
 <!-- STUDY:END -->
