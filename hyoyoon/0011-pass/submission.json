@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "baekjoon",
+  "problemId": "1000",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "boj-100765715",
+  "attempt": 11,
+  "outcome": "pass",
+  "verdict": "맞았습니다!!",
+  "capturedAt": 1795394247890,
+  "sourceSha256": "db0e6e874d3e0732cf93077e7d048e0f57a6d913794c15003a2a51c07c60e427",
+  "path": "hyoyoon/0011-pass/solution.cpp",
+  "url": "https://www.acmicpc.net/problem/1000"
+}
