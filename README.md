@@ -20,7 +20,7 @@
 | [프로그래머스 298518. 특정 물고기를 잡은 총 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/298518) | SELECT | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F298518/hyoyoon) (pass 2, fail 0) | [대화하기](https://github.com/quantum-jumpers/woowabros-coding-study/issues/36) |
 | [프로그래머스 299305. 대장균들의 자식의 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/299305) | OUTER JOIN, GROUP BY | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299305/hyoyoon) (pass 1, fail 1) | [대화하기](https://github.com/quantum-jumpers/woowabros-coding-study/issues/37) |
 | [프로그래머스 299307. 대장균의 크기에 따라 분류하기 1](https://school.programmers.co.kr/learn/courses/30/lessons/299307) | CASE | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299307/hyoyoon) (pass 1, fail 0) | [대화하기](https://github.com/quantum-jumpers/woowabros-coding-study/issues/38) |
-| [프로그래머스 301649. 대장균의 크기에 따라 분류하기 2](https://school.programmers.co.kr/learn/courses/30/lessons/301649) | SELECT | 3 | — | [대화하기](https://github.com/quantum-jumpers/woowabros-coding-study/issues/39) |
+| [프로그래머스 301649. 대장균의 크기에 따라 분류하기 2](https://school.programmers.co.kr/learn/courses/30/lessons/301649) | SELECT | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F301649/hyoyoon) (pass 1, fail 0) | [대화하기](https://github.com/quantum-jumpers/woowabros-coding-study/issues/39) |
 
 ## 프로그래밍
 
