@@ -9,7 +9,10 @@
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 대기 중인 PR |
 | --- | --- | --- | --- | --- |
 | [프로그래머스 59034. 모든 레코드 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/59034) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F59034/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 59405. 상위 n개 레코드](https://school.programmers.co.kr/learn/courses/30/lessons/59405) | 미분류 | 1 | — | [#15](https://github.com/quantum-jumpers/woowabros-coding-study/pull/15) |
 | [프로그래머스 131535. 조건에 맞는 회원수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131535) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F131535/hyoyoon) (pass 1, fail 0) | — |
+| [프로그래머스 131536. 재구매가 일어난 상품과 회원 리스트 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/131536) | 미분류 | 2 | — | [#13](https://github.com/quantum-jumpers/woowabros-coding-study/pull/13) |
+| [프로그래머스 131537. 오프라인/온라인 판매 데이터 통합하기](https://school.programmers.co.kr/learn/courses/30/lessons/131537) | 미분류 | 4 | — | [#14](https://github.com/quantum-jumpers/woowabros-coding-study/pull/14) |
 | [프로그래머스 164673. 조건에 부합하는 중고거래 댓글 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/164673) | 미분류 | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F164673/hyoyoon) (pass 1, fail 0) | — |
 
 ## 프로그래밍
