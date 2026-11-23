@@ -1,8 +1,5 @@
 name: Update study index
 on:
-  pull_request_target:
-    types: [closed]
-    branches: ["baekjoon/**", "programmers/**"]
   workflow_dispatch:
   schedule:
     - cron: "17,47 * * * *"
@@ -16,16 +13,11 @@ concurrency:
 jobs:
   index:
     if: >-
-      (github.event_name != 'pull_request_target' ||
-        (github.event.pull_request.merged == true &&
-         github.event.pull_request.head.repo.full_name == github.repository &&
-         startsWith(github.event.pull_request.head.ref, format('submissions/{0}/', github.event.pull_request.base.ref)))) &&
       (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') &&
       (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:

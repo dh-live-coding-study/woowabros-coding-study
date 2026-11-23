@@ -10,7 +10,7 @@ try {
     config: JSON.parse(await readFile('study.config.json', 'utf8')), repository: process.env.GITHUB_REPOSITORY,
     actor: process.env.GITHUB_ACTOR, memberId: event.inputs?.member, input: JSON.parse(event.inputs?.submission || '{}'),
   });
-  console.log(result.number ? `PR #${result.number}, ${result.attempt}회 제출` : '이미 병합된 제출입니다.');
+  console.log(`${result.branch}, ${result.attempt}회 제출${result.alreadyImported ? ' (이미 저장됨)' : ' 저장'}: ${result.url}`);
 } catch (error) {
   console.error(error instanceof SyntaxError ? '설정 또는 제출 JSON 형식을 확인하세요.' : error.message);
   process.exitCode = 1;
