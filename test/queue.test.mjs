@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 const script = (await readFile(new URL('../extension/background.mjs', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/gm, '');
-async function background(dispatch, readSource = async () => 'class Main {}') {
+async function background(dispatch, readSource = async () => 'class Main {}', confirm = async () => null) {
   const saved = { settings: { enabled: true, repository: 'team/study', member: 'learner', baekjoon: 'rudevico', programmers: 'rudevico', token: 'fixture-token' } };
   const calls = []; let listener, alarm;
   const chrome = {
@@ -13,7 +13,7 @@ async function background(dispatch, readSource = async () => 'class Main {}') {
     runtime: { getURL: name => `chrome-extension://collector/${name}`, onMessage: { addListener(fn) { listener = fn; } } },
   };
   vm.runInNewContext(script, { chrome, URL, Date, TextEncoder, structuredClone,
-    createSourceReader: () => readSource, dispatchSubmission: async (settings, item) => { calls.push(structuredClone(item)); if (dispatch) await dispatch(item); }, confirmSubmission: async () => null });
+    createSourceReader: () => readSource, dispatchSubmission: async (settings, item) => { calls.push(structuredClone(item)); if (dispatch) await dispatch(item); }, confirmSubmission: confirm });
   await new Promise(resolve => setImmediate(resolve));
   const send = (message, sender = { url: 'https://school.programmers.co.kr/learn/courses/30/lessons/42576', frameId: 0, tab: { id: 1 } }) => new Promise(resolve => listener(message, sender, resolve));
   return { saved, calls, send, alarm, options: { url: 'chrome-extension://collector/options.html' } };
@@ -41,6 +41,20 @@ test('pending source persists before judgment, fail resolves it once, page messa
   const settings = await b.send({ type: 'settings' }); assert.doesNotMatch(JSON.stringify(settings), /fixture-token/);
   const foreign = await b.send({ type: 'capture', submission: item('pg-2') }, { url: 'https://example.org', tab: { id: 1 }, frameId: 0 });
   assert.match(foreign.error, /허용하지/); assert.equal(b.calls.length, 1);
+});
+
+test('confirmed problem-branch storage moves a queued original to history without redispatch', async () => {
+  let stored = false;
+  const receipt = { attempt: 3, url: `https://github.com/team/study/blob/${'a'.repeat(40)}/learner/0003-fail/Solution.java` };
+  const b = await background(undefined, undefined, async () => stored ? receipt : null);
+  await b.send({ type: 'capture', submission: item('pg-confirm') });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(b.saved.queue.length, 1); assert.equal(b.saved.history?.length || 0, 0);
+  stored = true;
+  await b.send({ type: 'retry', key: b.saved.queue[0].key }, b.options);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(b.calls.length, 1); assert.equal(b.saved.queue.length, 0);
+  assert.equal(b.saved.history[0].attempt, receipt.attempt); assert.equal(b.saved.history[0].url, receipt.url);
 });
 
 test('slow GitHub dispatch does not delay durable storage of the next submitted source', async () => {

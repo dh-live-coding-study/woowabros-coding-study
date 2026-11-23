@@ -47,7 +47,7 @@ function deliver(key, mode = 'send') {
           data.history.push({ key, platform: current.submission.platform, problemId: current.submission.problemId, outcome: current.submission.outcome, ...found });
         } else {
           current.state = 'sent'; current.nextCheckAt = Date.now() + 60000;
-          current.message = mode === 'confirm' ? 'PR을 기다리며 원문을 보관하고 있습니다.' : 'PR 생성을 요청했습니다.';
+          current.message = mode === 'confirm' ? 'GitHub 저장을 기다리며 원문을 보관하고 있습니다.' : '문제 브랜치에 저장을 요청했습니다.';
           data.queue = [...data.queue.filter(item => item.key !== key), current];
         }
         await chrome.storage.local.set({ queue: data.queue, history: data.history, lastError: '' });
