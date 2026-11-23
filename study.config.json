@@ -8,6 +8,8 @@
     }
   ],
   "problems": {
-    "programmers/181943": { "categories": ["String"] }
+    "programmers/181943": { "categories": ["String"] },
+    "programmers/299305": { "categories": ["OUTER JOIN", "GROUP BY"] },
+    "programmers/299307": { "categories": ["CASE"] }
   }
 }
