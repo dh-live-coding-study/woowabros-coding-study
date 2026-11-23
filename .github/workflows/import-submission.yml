@@ -12,6 +12,10 @@ on:
         required: true
         type: string
 permissions: {}
+concurrency:
+  group: collect-submission
+  queue: max
+  cancel-in-progress: false
 jobs:
   import:
     if: github.ref == 'refs/heads/main'

@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
-const script = (await readFile(new URL('../extension/background.mjs', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/, '');
-async function background(dispatch) {
+const script = (await readFile(new URL('../extension/background.mjs', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/gm, '');
+async function background(dispatch, readSource = async () => 'class Main {}') {
   const saved = { settings: { enabled: true, repository: 'team/study', member: 'learner', baekjoon: 'rudevico', programmers: 'rudevico', token: 'fixture-token' } };
   const calls = []; let listener, alarm;
   const chrome = {
@@ -13,7 +13,7 @@ async function background(dispatch) {
     runtime: { getURL: name => `chrome-extension://collector/${name}`, onMessage: { addListener(fn) { listener = fn; } } },
   };
   vm.runInNewContext(script, { chrome, URL, Date, TextEncoder, structuredClone,
-    dispatchSubmission: async (settings, item) => { calls.push(structuredClone(item)); if (dispatch) await dispatch(item); }, confirmSubmission: async () => null });
+    createSourceReader: () => readSource, dispatchSubmission: async (settings, item) => { calls.push(structuredClone(item)); if (dispatch) await dispatch(item); }, confirmSubmission: async () => null });
   await new Promise(resolve => setImmediate(resolve));
   const send = (message, sender = { url: 'https://school.programmers.co.kr/learn/courses/30/lessons/42576', frameId: 0, tab: { id: 1 } }) => new Promise(resolve => listener(message, sender, resolve));
   return { saved, calls, send, alarm, options: { url: 'chrome-extension://collector/options.html' } };
@@ -56,4 +56,27 @@ test('slow GitHub dispatch does not delay durable storage of the next submitted 
   assert.equal(b.saved.queue[1].state, 'waiting');
   release(); await new Promise(resolve => setImmediate(resolve));
   assert.equal(b.saved.queue.length, 2);
+});
+
+
+test('source tab loading does not delay storage of a new submission', { timeout: 2000 }, async () => {
+  let release;
+  const b = await background(undefined, () => new Promise(resolve => { release = resolve; }));
+  const reading = b.send({ type: 'read-source', id: '1', account: 'rudevico' }, { url: 'https://acmicpc.net/status', frameId: 0, tab: { id: 2 } });
+  await new Promise(resolve => setImmediate(resolve));
+  try {
+    await b.send({ type: 'pending', submission: item('pg-while-reading', 'pending') });
+    assert.equal(b.saved.queue[0].submission.captureId, 'pg-while-reading');
+  } finally { release('class Main {}'); }
+  assert.equal((await reading).code, 'class Main {}');
+});
+
+test('source reads reject other pages and accounts before opening tabs', async () => {
+  let reads = 0;
+  const b = await background(undefined, async () => { reads++; return 'class Main {}'; });
+  const message = { type: 'read-source', id: '1', account: 'rudevico' };
+  assert.match((await b.send(message)).error, /허용하지/);
+  assert.match((await b.send(message, { url: 'https://acmicpc.net/source/1', frameId: 0, tab: { id: 2 } })).error, /허용하지/);
+  assert.match((await b.send({ ...message, account: 'other' }, { url: 'https://acmicpc.net/status', frameId: 0, tab: { id: 2 } })).error, /설정과 계정/);
+  assert.equal(reads, 0);
 });

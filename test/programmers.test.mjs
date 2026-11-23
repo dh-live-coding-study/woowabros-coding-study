@@ -49,3 +49,18 @@ test('runtime/compile failure is fail, missing verdict stays pending, foreign ch
   assert.equal(b.emitted.filter(item => item.type === 'pending').length, 1);
   assert.equal(b.socket.sent.length, 3);
 });
+
+test('SQL uses its own channel and repeated correct or incorrect queries retain the submitted source', () => {
+  const b = browser();
+  const identifier = JSON.stringify({ channel: 'Challenge::SqlChannel', lesson_id: 42576, language: 'mysql' });
+  const correct = 'SELECT ROUND(AVG(DAILY_FEE), 0) AS AVERAGE_FEE\nFROM CAR_RENTAL_COMPANY_CAR\nWHERE CAR_TYPE = \'SUV\';\n';
+  b.submit(correct, 'run', identifier);
+  assert.equal(b.emitted.filter(item => item.type === 'pending').length, 0);
+  b.submit(correct, 'submit', identifier); b.result({ type: 'result_lesson_challenge', passed: true }, identifier);
+  b.submit('SELECT 1;', 'submit', identifier); b.result({ type: 'result_without_score', passed: false }, identifier);
+  const captures = b.emitted.filter(item => item.type === 'capture').map(item => item.submission);
+  assert.deepEqual(captures.map(item => item.outcome), ['pass', 'fail']);
+  assert.deepEqual(captures.map(item => item.extension), ['sql', 'sql']);
+  assert.equal(captures[0].code, correct); assert.equal(captures[1].code, 'SELECT 1;');
+  assert.notEqual(captures[0].captureId, captures[1].captureId);
+});
