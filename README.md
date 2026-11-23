@@ -18,7 +18,7 @@
 | [프로그래머스 276013. Python 개발자 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/276013) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F276013/hyoyoon) (pass 1, fail 0) |
 | [프로그래머스 293258. 잔챙이 잡은 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/293258) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F293258/hyoyoon) (pass 1, fail 0) |
 | [프로그래머스 298518. 특정 물고기를 잡은 총 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/298518) | SELECT | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F298518/hyoyoon) (pass 2, fail 0) |
-| [프로그래머스 299305. 대장균들의 자식의 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/299305) | SELECT | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299305/hyoyoon) (pass 0, fail 1) |
+| [프로그래머스 299305. 대장균들의 자식의 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/299305) | SELECT | 3 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F299305/hyoyoon) (pass 1, fail 1) |
 
 ## 프로그래밍
 
