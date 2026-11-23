@@ -19,7 +19,7 @@
 
 | 문제 | 카테고리 | 난이도 | 제출 기록 | 대기 중인 PR |
 | --- | --- | --- | --- | --- |
-| [백준 1000. A+B](https://www.acmicpc.net/problem/1000) | 미분류 | — | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F1000/hyoyoon) (pass 5, fail 7) | — |
+| [백준 1000. A+B](https://www.acmicpc.net/problem/1000) | 미분류 | Bronze V | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/baekjoon%2F1000/hyoyoon) (pass 5, fail 7) | — |
 | [프로그래머스 181943. 문자열 겹쳐쓰기](https://school.programmers.co.kr/learn/courses/30/lessons/181943) | 미분류 | 0 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F181943/hyoyoon) (pass 2, fail 0) | — |
 
 <!-- STUDY:END -->
