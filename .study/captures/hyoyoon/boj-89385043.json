@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "baekjoon",
+  "problemId": "1000",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "boj-89385043",
+  "attempt": 2,
+  "outcome": "fail",
+  "verdict": "틀렸습니다",
+  "capturedAt": 1795394243287,
+  "sourceSha256": "b4d4f97fb58bc900bf71d938eb74ea8165932349c0b35cc4fc5f4b7d51d3dd1c",
+  "path": "hyoyoon/0002-fail/Main.java",
+  "url": "https://www.acmicpc.net/problem/1000"
+}
