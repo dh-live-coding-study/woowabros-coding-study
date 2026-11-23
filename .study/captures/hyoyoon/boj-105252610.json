@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "baekjoon",
+  "problemId": "7576",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "boj-105252610",
+  "attempt": 2,
+  "outcome": "pass",
+  "verdict": "맞았습니다!!",
+  "capturedAt": 1795436601909,
+  "sourceSha256": "d6cec56b6d0e3581695d4b93cd6a5cef5846152582d65b30eb2dad9d21d0a313",
+  "path": "hyoyoon/0002-pass/Main.java",
+  "url": "https://www.acmicpc.net/problem/7576"
+}
