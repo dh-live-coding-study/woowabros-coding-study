@@ -16,7 +16,7 @@
 | [프로그래머스 164673. 조건에 부합하는 중고거래 댓글 조회하기](https://school.programmers.co.kr/learn/courses/30/lessons/164673) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F164673/hyoyoon) (pass 1, fail 0) | — |
 | [프로그래머스 273711. 업그레이드 된 아이템 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/273711) | SELECT | 2 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F273711/hyoyoon) (pass 1, fail 0) | — |
 | [프로그래머스 276013. Python 개발자 찾기](https://school.programmers.co.kr/learn/courses/30/lessons/276013) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F276013/hyoyoon) (pass 1, fail 0) | — |
-| [프로그래머스 293258. 잔챙이 잡은 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/293258) | SELECT | 1 | — | [#20](https://github.com/quantum-jumpers/woowabros-coding-study/pull/20) |
+| [프로그래머스 293258. 잔챙이 잡은 수 구하기](https://school.programmers.co.kr/learn/courses/30/lessons/293258) | SELECT | 1 | [hyoyoon](https://github.com/quantum-jumpers/woowabros-coding-study/tree/programmers%2F293258/hyoyoon) (pass 1, fail 0) | — |
 
 ## 프로그래밍
 
