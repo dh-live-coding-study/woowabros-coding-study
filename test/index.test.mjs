@@ -22,7 +22,7 @@ test('index publishes stored counts and a conversation column without requesting
   assert.deepEqual(github.objects.get(first.sha).parents, [previous]);
   assert.doesNotMatch(content, /대기 중인 PR|pull\//);
   assert.match(content, /pass 0, fail 1/);
-  assert.match(content, /해설과 대화/);
+  assert.match(content, /토론방/);
   for (const row of content.split('\n').filter(line => line.startsWith('|'))) assert.equal(row.split('|').length, 7);
   assert.equal(github.requests.some(({ path }) => path.startsWith('/pulls')), false);
   assert.equal(content.split('<!-- STUDY:START -->')[0], before.split('<!-- STUDY:START -->')[0]);
