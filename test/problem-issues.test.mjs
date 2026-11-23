@@ -75,7 +75,7 @@ test('catalog updates backfill issues and keep the same link across pass, fail a
   await run(input('first'));
   const publish = () => publishIndex({ github, repository, config, issueFor: problemIssues({ github, repository }) });
   await publish();
-  assert.match(await github.readText('README.md', 'main'), /pass 0, fail 1.*\[대화하기\]\(https:\/\/github.com\/team\/study\/issues\/1\)/);
+  assert.match(await github.readText('README.md', 'main'), /pass 0, fail 1.*\[토론\]\(https:\/\/github.com\/team\/study\/issues\/1\)/);
   const issueBody = issues[0].body;
   await run({ ...input('second'), outcome: 'pass', verdict: '정답' });
   await publish();
