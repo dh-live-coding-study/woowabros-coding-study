@@ -88,8 +88,9 @@
         if (!problemId) continue;
         try {
           const code = await sourceFromPage(id);
-          const length = Number(cells[lengthIndex]?.textContent.replace(/,/g, '').match(/^\s*([1-9][0-9]*)\s*B\s*$/i)?.[1]);
-          if (!code.trim() || !Number.isSafeInteger(length) || new TextEncoder().encode(code).length !== length) throw new Error(`백준 ${id}번 원문과 채점 현황의 코드 길이가 다릅니다. 원문을 전송하지 않았습니다.`);
+          const length = Number(cells[lengthIndex]?.textContent.replace(/,/g, '').match(/^\s*([1-9][0-9]*)\s*B?\s*$/i)?.[1]);
+          const actualLength = new TextEncoder().encode(code).length;
+          if (!code.trim() || !Number.isSafeInteger(length) || actualLength !== length) throw new Error(`백준 ${id}번 원문과 채점 현황의 코드 길이가 다릅니다(원문 ${actualLength} B, 채점 현황 ${Number.isSafeInteger(length) ? length : '확인 불가'}). 원문을 전송하지 않았습니다.`);
           const submission = { platform: 'baekjoon', problemId, captureId: `boj-${id}`, account,
             title: link.getAttribute('title') || link.getAttribute('data-original-title') || link.textContent.trim() || problemId,
             extension: extension(cells[languageIndex]?.textContent || ''), code, outcome: category === 'ac' ? 'pass' : 'fail',

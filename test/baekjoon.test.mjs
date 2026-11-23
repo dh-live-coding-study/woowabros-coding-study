@@ -7,7 +7,7 @@ const defaultCode = 'class Main {}';
 function row(id, category, user = 'rudevico', length = Buffer.byteLength(defaultCode)) {
   const link = { textContent: '1000', getAttribute: key => key === 'href' ? '/problem/1000' : key === 'data-original-title' ? 'A+B' : null };
   const result = { textContent: category, getAttribute: () => category };
-  return { id: `solution-${id}`, querySelectorAll: () => [{ textContent: id }, { textContent: user }, { textContent: 'Java 17' }, { textContent: `${length} B` }], querySelector: selector => selector === '[data-color]' ? result : link };
+  return { id: `solution-${id}`, querySelectorAll: () => [{ textContent: id }, { textContent: user }, { textContent: 'Java 17' }, { textContent: String(length) }], querySelector: selector => selector === '[data-color]' ? result : link };
 }
 async function browser(rows = [], read = () => defaultCode, { pathname = '/status', owner = 'rudevico', source = defaultCode, sourceId = '1' } = {}) {
   const collected = [], scans = [], errors = [];
