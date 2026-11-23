@@ -64,4 +64,4 @@ hyoyoon/
 
 새 제출을 수집하면 main README의 목록을 갱신하는 PR이 만들어집니다. 병합된 제출은 30분 간격의 목록 갱신 때 반영합니다. 목록 PR도 병합하면 위 표에 반영됩니다.
 
-확장 프로그램을 업데이트할 때는 새 ZIP의 `extension` 폴더로 교체하고 `chrome://extensions`에서 새로고침을 누른 뒤, 열어 둔 문제 탭도 새로 고칩니다.
+확장 프로그램을 업데이트할 때는 새 ZIP의 `extension` 폴더로 교체하고 `chrome://extensions`에서 새로고침을 누른 뒤, 열어 둔 문제 탭에서 강력 새로고침을 누릅니다. macOS는 `Cmd+Shift+R`, Windows는 `Ctrl+Shift+R`입니다.

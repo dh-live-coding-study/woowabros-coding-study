@@ -64,3 +64,36 @@ test('SQL uses its own channel and repeated correct or incorrect queries retain 
   assert.equal(captures[0].code, correct); assert.equal(captures[1].code, 'SELECT 1;');
   assert.notEqual(captures[0].captureId, captures[1].captureId);
 });
+
+test('database lessons use the lesson ID and retain repeated SQL submissions after final grading', () => {
+  const b = browser();
+  b.location.pathname = '/learn/courses/30/lessons/164673';
+  const identifier = JSON.stringify({ channel: 'Challenge::DatabaseChannel', challengeable_type: 'database', challengeable_id: 2819, language: 'mysql', lesson_id: 164673 });
+  const code = '\ufeffSELECT 1;\r\n-- 공백  \r\n';
+  b.submit(code, 'run', identifier);
+  assert.equal(b.emitted.filter(item => item.type === 'pending').length, 0);
+  b.submit(code, 'submit', identifier);
+  assert.equal(b.emitted.filter(item => item.type === 'pending').length, 1);
+  b.result({ type: 'testcase', passed: false }, identifier);
+  assert.equal(b.emitted.filter(item => item.type === 'capture').length, 0);
+  b.result({ type: 'result_lesson_challenge', passed: true }, identifier);
+  b.submit('SELECT 2;', 'submit', identifier);
+  b.result({ type: 'result_lesson_challenge', passed: false }, identifier);
+  const captures = b.emitted.filter(item => item.type === 'capture').map(item => item.submission);
+  assert.deepEqual(captures.map(item => item.problemId), ['164673', '164673']);
+  assert.deepEqual(captures.map(item => item.extension), ['sql', 'sql']);
+  assert.deepEqual(captures.map(item => item.outcome), ['pass', 'fail']);
+  assert.equal(captures[0].code, code);
+  assert.equal(captures[1].code, 'SELECT 2;');
+  assert.notEqual(captures[0].captureId, captures[1].captureId);
+});
+
+test('database exams and subscriptions for another lesson are ignored', () => {
+  const b = browser();
+  b.location.pathname = '/learn/courses/30/lessons/164673';
+  const spec = { channel: 'Challenge::DatabaseChannel', challengeable_type: 'database', challengeable_id: 2819, language: 'mysql', lesson_id: 164673 };
+  for (const extra of [{ test_id: 7 }, { skill_check_id: 8 }, { lesson_id: 131118 }]) {
+    b.submit('SELECT 1;', 'submit', JSON.stringify({ ...spec, ...extra }));
+  }
+  assert.equal(b.emitted.filter(item => item.type === 'pending').length, 0);
+});
