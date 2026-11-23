@@ -1,4 +1,5 @@
 import { dispatchSubmission, confirmSubmission } from './delivery.mjs';
+import { createSourceReader } from './source-reader.mjs';
 const alarm = 'confirm-submissions';
 const origins = new Set(['https://acmicpc.net', 'https://www.acmicpc.net', 'https://school.programmers.co.kr']);
 const ready = (async () => {
@@ -8,8 +9,16 @@ const ready = (async () => {
 let serial = Promise.resolve(), network = Promise.resolve();
 const active = new Set();
 const enqueue = task => serial = serial.catch(() => {}).then(task);
+const readSource = createSourceReader(chrome.tabs);
 chrome.action.onClicked.addListener(() => chrome.runtime.openOptionsPage());
 async function state() { await ready; return { queue: [], history: [], ...(await chrome.storage.local.get(['settings', 'queue', 'history', 'lastError'])) }; }
+async function readRequestedSource(message, sender) {
+  const url = new URL(sender.url || 'about:blank');
+  if (!sender.tab || sender.frameId !== 0 || url.pathname !== '/status' || !['https://acmicpc.net', 'https://www.acmicpc.net'].includes(url.origin)) throw new Error('허용하지 않는 백준 소스 요청입니다.');
+  const { settings } = await state();
+  if (!settings?.enabled || !settings.baekjoon || message.account !== settings.baekjoon) throw new Error('백준 수집 설정과 계정을 확인하세요.');
+  return { code: await readSource({ origin: url.origin, id: message.id, account: settings.baekjoon }) };
+}
 function validate(item, sender, pending = false) {
   if (!item || !['baekjoon', 'programmers'].includes(item.platform) || !/^[1-9][0-9]{0,11}$/.test(item.problemId || '') || !/^[a-zA-Z0-9_-]{1,100}$/.test(item.captureId || '') || !(pending ? item.outcome === 'pending' : ['pass', 'fail'].includes(item.outcome)) || typeof item.code !== 'string' || !item.code.trim() || new TextEncoder().encode(item.code).length > 40000) throw new Error('제출 정보 또는 코드 크기를 확인하세요.');
   const expected = item.platform === 'programmers' ? 'https://school.programmers.co.kr' : null;
@@ -106,7 +115,8 @@ async function handle(message, sender) {
   throw new Error('허용하지 않는 요청입니다.');
 }
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  enqueue(() => handle(message, sender)).then(respond, async error => {
+  const task = message?.type === 'read-source' ? readRequestedSource(message, sender) : enqueue(() => handle(message, sender));
+  task.then(respond, async error => {
     await chrome.storage.local.set({ lastError: error.message });
     respond({ error: error.message });
   });

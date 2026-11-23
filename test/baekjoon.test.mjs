@@ -9,103 +9,60 @@ function row(id, category, user = 'rudevico', length = Buffer.byteLength(default
   const result = { textContent: category, getAttribute: () => category };
   return { id: `solution-${id}`, querySelectorAll: () => [{ textContent: id }, { textContent: user }, { textContent: 'Java 17' }, { textContent: `${length} B` }], querySelector: selector => selector === '[data-color]' ? result : link };
 }
-function page(code = defaultCode) {
-  return { querySelector: selector => selector === 'textarea[name="source"]' ? { value: code } : null };
-}
-async function browser(rows, load = () => page()) {
-  const collected = [], scans = [], errors = [], frames = [], timeouts = new Map();
-  let active = 0, maxActive = 0, timerId = 0, now = Date.now();
+async function browser(rows = [], read = () => defaultCode, { pathname = '/status', owner = 'rudevico', source = defaultCode, sourceId = '1' } = {}) {
+  const collected = [], scans = [], errors = [];
+  let listener, now = Date.now();
   const window = { addEventListener() {}, postMessage() {} };
-  const chrome = { runtime: { sendMessage(message, callback) { if (message.type === 'settings') callback({ enabled: true, baekjoon: 'rudevico' }); else { if (message.type === 'capture') collected.push(message.submission); if (message.type === 'error') errors.push(message.message); callback({}); } } }, storage: { onChanged: { addListener() {} } } };
-  const table = { querySelectorAll: selector => selector === 'thead th' ? ['제출 번호', '아이디', '언어', '코드 길이'].map(textContent => ({ textContent })) : rows };
-  const document = {
-    querySelector: selector => selector === 'a.username' ? { textContent: 'rudevico' } : table,
-    createElement(tag) {
-      assert.equal(tag, 'iframe');
-      const events = {}, attributes = {};
-      const frame = {
-        events, attributes, removed: false,
-        addEventListener(type, handler) { events[type] = handler; },
-        setAttribute(name, value) { attributes[name] = value; },
-        remove() { if (!this.removed) { this.removed = true; active--; } },
-      };
-      return frame;
+  const chrome = { runtime: {
+    id: 'collector', onMessage: { addListener(fn) { listener = fn; } },
+    sendMessage(message, callback) {
+      if (message.type === 'settings') callback({ enabled: true, baekjoon: 'rudevico' });
+      else if (message.type === 'read-source') Promise.resolve().then(() => read(message.id)).then(code => callback({ code }), error => callback({ error: error.message }));
+      else { if (message.type === 'capture') collected.push(message.submission); if (message.type === 'error') errors.push(message.message); callback({}); }
     },
-    body: { append(frame) {
-      frames.push(frame); active++; maxActive = Math.max(maxActive, active);
-      Promise.resolve().then(async () => {
-        try {
-          const result = await load(frame.src);
-          if (result === undefined) return;
-          frame.contentDocument = result;
-          frame.events.load();
-        } catch { frame.events.error(); }
-      });
-    } },
-  };
-  vm.runInNewContext(script, { chrome, window, document, location: { hostname: 'www.acmicpc.net', pathname: '/status', origin: 'https://www.acmicpc.net' }, URL, Date: { now: () => now }, TextEncoder,
-    setInterval: callback => scans.push(callback), setTimeout: callback => { timeouts.set(++timerId, callback); return timerId; }, clearTimeout: id => timeouts.delete(id), console: { warn() {} } });
+  }, storage: { onChanged: { addListener() {} } } };
+  const table = { querySelectorAll: selector => selector === 'thead th' ? ['제출 번호', '아이디', '언어', '코드 길이'].map(textContent => ({ textContent })) : rows };
+  const metadata = { querySelectorAll: () => [
+    { querySelectorAll: () => ['제출 번호', '아이디'].map(textContent => ({ textContent })) },
+    { querySelectorAll: () => [sourceId, owner].map(textContent => ({ textContent })) },
+  ] };
+  const document = { querySelector: selector => selector === 'a.username' ? { textContent: 'rudevico' } : selector === 'table' ? metadata : selector === 'textarea[name="source"]' ? (source === null ? null : { value: source }) : table };
+  vm.runInNewContext(script, { chrome, window, document, location: { hostname: 'acmicpc.net', pathname, origin: 'https://acmicpc.net' }, URL, Date: { now: () => now }, TextEncoder,
+    setInterval: callback => scans.push(callback), console: { warn() {} } });
   await new Promise(resolve => setImmediate(resolve));
-  return { collected, errors, frames, timeouts, get maxActive() { return maxActive; }, scan: () => scans[0](), expire: () => [...timeouts.values()][0](), advance: ms => { now += ms; } };
+  return { collected, errors, scan: () => scans[0](), advance: ms => { now += ms; },
+    readPage: (message = { type: 'read-source-page', id: '1', account: 'rudevico' }, sender = { id: 'collector' }) => new Promise(resolve => listener(message, sender, resolve)) };
 }
 
-test('BOJ reads own completed passes and failures one page at a time without altering the textarea value', async () => {
-  const code = '\n\ufeffclass Main {\r\n  // < > & &lt; 공백  \r\n}\r\n';
+test('BOJ collects own completed passes and failures without altering the returned source', async () => {
+  const code = '\n\ufeffclass Main {\r\n // < > & &lt; 공백  \r\n}\r\n';
   const length = Buffer.byteLength(code);
-  const b = await browser([row('6', 'awa', 'rudevico', length), row('5', 'judging'), row('4', 'ce', 'rudevico', length), row('3', 'ac-eng', 'rudevico', length), row('2', 'wa', 'rudevico', length), row('1', 'ac', 'other')], () => page(code));
+  const b = await browser([row('6', 'awa', 'rudevico', length), row('5', 'judging'), row('4', 'ce', 'rudevico', length), row('3', 'ac-eng', 'rudevico', length), row('2', 'wa', 'rudevico', length), row('1', 'ac', 'other')], () => code);
   await b.scan(); await b.scan();
   assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2', 'boj-3', 'boj-4', 'boj-6']);
   assert.deepEqual(b.collected.map(item => item.outcome), ['fail', 'pass', 'fail', 'fail']);
   assert.equal(b.collected[0].code, code); assert.equal(b.collected[0].title, 'A+B');
-  assert.equal(b.maxActive, 1); assert.equal(b.frames.length, 4); assert.equal(b.timeouts.size, 0);
-  for (const frame of b.frames) {
-    assert.equal(frame.hidden, true); assert.equal(frame.attributes.sandbox, 'allow-same-origin'); assert.equal(frame.removed, true);
-  }
 });
 
-test('a missing or inaccessible source document is not collected and its frame is removed', async () => {
-  for (const source of [null, { querySelector: () => null }]) {
-    const b = await browser([row('1', 'ac')], () => source);
-    await b.scan(); assert.equal(b.collected.length, 0); assert.match(b.errors[0], /원문을 찾지 못했습니다/);
-    assert.equal(b.frames[0].removed, true); assert.equal(b.timeouts.size, 0);
-  }
-});
-
-test('an inaccessible older submission does not block later submissions on the same status page', async () => {
+test('an inaccessible older submission does not block later submissions or retry immediately', async () => {
   const requested = [];
-  const b = await browser([row('2', 'wa'), row('1', 'ac')], url => {
-    requested.push(url);
-    return url.endsWith('/1') ? null : page();
-  });
-  await b.scan(); await b.scan();
+  const b = await browser([row('2', 'wa'), row('1', 'ac')], id => { requested.push(id); if (id === '1') throw new Error('원문 없음'); return defaultCode; });
+  await b.scan(); await b.scan(); assert.deepEqual(requested, ['1', '2']);
   assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2']);
-  assert.deepEqual(requested, ['/source/1', '/source/2']);
+  b.advance(31000); await b.scan(); assert.deepEqual(requested, ['1', '2', '1']);
 });
 
-test('a load error removes the frame and allows the next submission to be read', async () => {
-  const b = await browser([row('2', 'ac'), row('1', 'ac')], url => {
-    if (url.endsWith('/1')) throw new Error('network');
-    return page();
-  });
-  await b.scan(); assert.deepEqual(b.collected.map(item => item.captureId), ['boj-2']);
-  assert.match(b.errors[0], /화면/); assert.ok(b.frames.every(frame => frame.removed)); assert.equal(b.timeouts.size, 0);
-});
-
-test('a timed out source page is removed and does not leave the scanner busy', async () => {
-  let loads = 0;
-  const b = await browser([row('1', 'ac')], () => ++loads === 1 ? undefined : page());
-  const scanning = b.scan();
-  await new Promise(resolve => setImmediate(resolve));
-  b.expire(); await scanning;
-  assert.equal(b.collected.length, 0); assert.match(b.errors[0], /시간이 초과/);
-  assert.equal(b.frames[0].removed, true); assert.equal(b.timeouts.size, 0);
-  await b.scan(); assert.equal(b.frames.length, 1);
-  b.advance(31000); await b.scan();
-  assert.equal(b.frames.length, 2); assert.equal(b.collected[0]?.captureId, 'boj-1');
-});
-
-test('source that differs from the status page byte count is not sent', async () => {
+test('a byte count mismatch prevents capture', async () => {
   const b = await browser([row('1', 'ac', 'rudevico', 999)]);
   await b.scan(); assert.equal(b.collected.length, 0); assert.match(b.errors[0], /코드 길이가 다릅니다/);
-  assert.equal(b.frames[0].removed, true);
+});
+
+test('a source tab returns the textarea only for its requested submission and owner', async () => {
+  const b = await browser([], undefined, { pathname: '/source/1' });
+  const response = await b.readPage(); assert.equal(response.code, defaultCode);
+  const otherId = await b.readPage({ type: 'read-source-page', id: '2', account: 'rudevico' }); assert.match(otherId.error, /허용하지/);
+  const foreignSender = await b.readPage(undefined, { id: 'foreign' }); assert.match(foreignSender.error, /허용하지/);
+  const otherOwner = await browser([], undefined, { pathname: '/source/1', owner: 'other' }); assert.match((await otherOwner.readPage()).error, /계정/);
+  const staleSource = await browser([], undefined, { pathname: '/source/1', sourceId: '2' }); assert.match((await staleSource.readPage()).error, /제출 번호/);
+  const absent = await browser([], undefined, { pathname: '/source/1', source: null }); assert.match((await absent.readPage()).error, /원문을 찾지/);
 });

@@ -13,6 +13,21 @@
     console.warn('[study collector]', error.message);
     send({ type: 'error', message: error.message }).catch(() => {});
   };
+  chrome.runtime.onMessage.addListener((message, sender, respond) => {
+    if (message?.type !== 'read-source-page') return;
+    try {
+      if (sender.id !== chrome.runtime.id || !['acmicpc.net', 'www.acmicpc.net'].includes(location.hostname) || location.pathname !== `/source/${message.id}`) throw new Error('허용하지 않는 소스 조회입니다.');
+      const rows = document.querySelector('table')?.querySelectorAll('tr');
+      const headers = [...(rows?.[0]?.querySelectorAll('th,td') || [])].map(cell => cell.textContent.trim());
+      const cells = rows?.[1]?.querySelectorAll('td');
+      const owner = cells?.[headers.findIndex(text => /아이디|user/i.test(text))]?.textContent.trim();
+      const id = cells?.[headers.findIndex(text => /제출\s*번호|submission/i.test(text))]?.textContent.trim();
+      if (owner !== message.account || id !== message.id || document.querySelector('a.username')?.textContent.trim() !== message.account) throw new Error('백준 소스의 제출 번호와 계정이 일치하지 않습니다.');
+      const source = document.querySelector('textarea[name="source"]');
+      if (!source) throw new Error('백준 소스 조회 화면에서 원문을 찾지 못했습니다.');
+      respond({ code: source.value });
+    } catch (error) { respond({ error: error.message }); }
+  });
   async function configure() {
     settings = await send({ type: 'settings' });
     window.postMessage({ channel, type: 'configure', enabled: settings.enabled }, location.origin);
@@ -43,25 +58,7 @@
     return 'txt';
   }
   async function sourceFromPage(id) {
-    const frame = document.createElement('iframe');
-    frame.hidden = true;
-    frame.setAttribute('sandbox', 'allow-same-origin');
-    frame.src = `/source/${id}`;
-    let timer;
-    try {
-      await new Promise((resolve, reject) => {
-        frame.addEventListener('load', resolve, { once: true });
-        frame.addEventListener('error', () => reject(new Error(`백준 ${id}번 소스 조회 화면을 열지 못했습니다.`)), { once: true });
-        timer = setTimeout(() => reject(new Error(`백준 ${id}번 소스 조회 시간이 초과됐습니다.`)), 15000);
-        document.body.append(frame);
-      });
-      const source = frame.contentDocument?.querySelector('textarea[name="source"]');
-      if (!source) throw new Error(`백준 ${id}번 소스 조회 화면에서 원문을 찾지 못했습니다. 로그인 상태를 확인하세요.`);
-      return source.value;
-    } finally {
-      clearTimeout(timer);
-      frame.remove();
-    }
+    return (await send({ type: 'read-source', id, account: settings.baekjoon })).code;
   }
   async function scanBaekjoon() {
     if (busy || !settings.enabled || !['acmicpc.net', 'www.acmicpc.net'].includes(location.hostname) || location.pathname !== '/status') return;
