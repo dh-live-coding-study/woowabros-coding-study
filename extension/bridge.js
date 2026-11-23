@@ -42,12 +42,26 @@
     if (/ruby/i.test(language)) return 'rb';
     return 'txt';
   }
-  function sourceFromHtml(html) {
-    const source = html.match(/<textarea\b[^>]*\sname\s*=\s*(?:"source"|'source'|source(?=\s|>))[^>]*>([\s\S]*?)<\/textarea\s*>/i)?.[1];
-    if (source === undefined) throw new Error('백준 소스 조회 화면에서 원문을 찾지 못했습니다. 로그인 상태를 확인하세요.');
-    // HTML 파싱 과정에서 원문의 CRLF와 첫 줄바꿈이 바뀌지 않도록 문자 참조로 보호한다.
-    const encoded = source.replace(/\r/g, '&#13;').replace(/\n/g, '&#10;');
-    return new DOMParser().parseFromString(`<textarea>_${encoded}</textarea>`, 'text/html').querySelector('textarea').textContent.slice(1);
+  async function sourceFromPage(id) {
+    const frame = document.createElement('iframe');
+    frame.hidden = true;
+    frame.setAttribute('sandbox', 'allow-same-origin');
+    frame.src = `/source/${id}`;
+    let timer;
+    try {
+      await new Promise((resolve, reject) => {
+        frame.addEventListener('load', resolve, { once: true });
+        frame.addEventListener('error', () => reject(new Error(`백준 ${id}번 소스 조회 화면을 열지 못했습니다.`)), { once: true });
+        timer = setTimeout(() => reject(new Error(`백준 ${id}번 소스 조회 시간이 초과됐습니다.`)), 15000);
+        document.body.append(frame);
+      });
+      const source = frame.contentDocument?.querySelector('textarea[name="source"]');
+      if (!source) throw new Error(`백준 ${id}번 소스 조회 화면에서 원문을 찾지 못했습니다. 로그인 상태를 확인하세요.`);
+      return source.value;
+    } finally {
+      clearTimeout(timer);
+      frame.remove();
+    }
   }
   async function scanBaekjoon() {
     if (busy || !settings.enabled || !['acmicpc.net', 'www.acmicpc.net'].includes(location.hostname) || location.pathname !== '/status') return;
@@ -76,9 +90,7 @@
         const problemId = link?.getAttribute('href')?.match(/^\/problem\/([1-9][0-9]*)$/)?.[1];
         if (!problemId) continue;
         try {
-          const response = await fetch(`/source/${id}`, { credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(15000) });
-          if (!response.ok) throw new Error(`백준 ${id}번 소스 요청 실패: HTTP ${response.status}`);
-          const code = sourceFromHtml(new TextDecoder('utf-8', { fatal: true }).decode(await response.arrayBuffer()));
+          const code = await sourceFromPage(id);
           const length = Number(cells[lengthIndex]?.textContent.replace(/,/g, '').match(/^\s*([1-9][0-9]*)\s*B\s*$/i)?.[1]);
           if (!code.trim() || !Number.isSafeInteger(length) || new TextEncoder().encode(code).length !== length) throw new Error(`백준 ${id}번 원문과 채점 현황의 코드 길이가 다릅니다. 원문을 전송하지 않았습니다.`);
           const submission = { platform: 'baekjoon', problemId, captureId: `boj-${id}`, account,
