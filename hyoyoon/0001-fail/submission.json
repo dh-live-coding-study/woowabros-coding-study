@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "baekjoon",
+  "problemId": "7576",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "boj-105252594",
+  "attempt": 1,
+  "outcome": "fail",
+  "verdict": "런타임 에러 (main class Main)",
+  "capturedAt": 1795436532191,
+  "sourceSha256": "7dbbf70daf938b6014f784eb7bd19374b1128a1208559a6bf6a780051f3fb14a",
+  "path": "hyoyoon/0001-fail/Main.java",
+  "url": "https://www.acmicpc.net/problem/7576"
+}
