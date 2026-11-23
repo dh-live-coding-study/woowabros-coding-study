@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "platform": "programmers",
+  "problemId": "273711",
+  "member": "hyoyoon",
+  "github": "HyoYoonNam",
+  "account": "rudevico",
+  "captureId": "0bed35bd-09e7-4956-aedd-afa5322fd982",
+  "attempt": 1,
+  "outcome": "pass",
+  "verdict": "정답",
+  "capturedAt": 1795409194237,
+  "sourceSha256": "46d15c152404be8cc5c9fc03a9ed21badd7880b834baa57ca17c044a8a3c8cf8",
+  "path": "hyoyoon/0001-pass/solution.sql",
+  "url": "https://school.programmers.co.kr/learn/courses/30/lessons/273711"
+}
